@@ -20,5 +20,5 @@ COPY . /my_pro/
 EXPOSE 8000
 
 # Start the Django development server
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+CMD ["python", "my_pro/manage.py", "runserver", "0.0.0.0:8000"]
 

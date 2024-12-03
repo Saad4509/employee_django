@@ -17,6 +17,9 @@ RUN apt-get update && apt-get install -y \
     curl \
     && apt-get clean
 
+# Enable necessary Apache modules
+RUN a2enmod proxy proxy_http
+
 # Copy the requirements file from the 'my_pro' folder in your local machine to the container
 COPY my_pro/requirements.txt /my_pro/
 
@@ -38,5 +41,6 @@ RUN echo '<VirtualHost *:80>' > /etc/apache2/sites-available/000-default.conf &&
 EXPOSE 80
 
 # Start Apache HTTPD and Gunicorn
-CMD service apache2 start && gunicorn --bind 0.0.0.0:8000 my_pro.wsgi:application
+CMD apache2ctl -D FOREGROUND && gunicorn --bind 0.0.0.0:8000 my_pro.wsgi:application
+
 

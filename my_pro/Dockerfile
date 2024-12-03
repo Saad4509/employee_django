@@ -22,13 +22,17 @@ COPY requirements.txt /my_pro/
 RUN pip install --upgrade pip
 RUN pip install --no-cache-dir -r /my_pro/requirements.txt
 
-# Copy the Apache config file into the container
-COPY my_pro.conf /etc/apache2/sites-available/000-default.conf
-
 # Copy the entire project directory into the container
 COPY . /my_pro/
 
-# Expose HTTP port 80
+# Write the Apache configuration inline
+RUN echo '<VirtualHost *:80>' > /etc/apache2/sites-available/000-default.conf && \
+    echo '    ServerName localhost' >> /etc/apache2/sites-available/000-default.conf && \
+    echo '    ProxyPass / http://127.0.0.1:8000/' >> /etc/apache2/sites-available/000-default.conf && \
+    echo '    ProxyPassReverse / http://127.0.0.1:8000/' >> /etc/apache2/sites-available/000-default.conf && \
+    echo '</VirtualHost>' >> /etc/apache2/sites-available/000-default.conf
+
+# Expose port 80 for HTTP
 EXPOSE 80
 
 # Start Apache HTTPD and Gunicorn

@@ -7,10 +7,12 @@ ENV PYTHONUNBUFFERED=1
 # Set the working directory inside the container
 WORKDIR /my_pro
 
-# Copy the requirements.txt file from the subdirectory
-COPY my_pro/requirements.txt /my_pro/
+# Install system dependencies
+RUN apt-get update && apt-get install -y gcc libpq-dev
 
-# Install Python dependencies
+# Upgrade pip and install Python dependencies
+COPY my_pro/requirements.txt /my_pro/
+RUN pip install --upgrade pip
 RUN pip install --no-cache-dir -r /my_pro/requirements.txt
 
 # Copy the entire project directory into the container

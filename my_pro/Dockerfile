@@ -17,12 +17,14 @@ RUN apt-get update && apt-get install -y \
     curl \
     && apt-get clean
 
+# Copy the requirements file from the 'my_pro' folder in your local machine to the container
+COPY my_pro/requirements.txt /my_pro/
+
 # Install Python dependencies
-COPY requirements.txt /my_pro/
 RUN pip install --upgrade pip
 RUN pip install --no-cache-dir -r /my_pro/requirements.txt
 
-# Copy the entire project directory into the container
+# Copy the entire project directory (including 'my_pro' folder) into the container
 COPY . /my_pro/
 
 # Write the Apache configuration inline

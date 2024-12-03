@@ -1,46 +1,18 @@
 FROM python:3.10-slim
 
-# Set environment variables for Django
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
-
-# Set the working directory inside the container
+# Set the working directory
 WORKDIR /my_pro
 
-# Install system dependencies for Apache HTTPD, mod_wsgi, and others
-RUN apt-get update && apt-get install -y \
-    gcc \
-    libpq-dev \
-    apache2 \
-    apache2-dev \
-    libapache2-mod-wsgi-py3 \
-    curl \
-    && apt-get clean
-
-# Enable necessary Apache modules
-RUN a2enmod proxy proxy_http
-
-# Copy the requirements file from the 'my_pro' folder in your local machine to the container
+# Copy the requirements file and install dependencies
 COPY my_pro/requirements.txt /my_pro/
-
-# Install Python dependencies
-RUN pip install --upgrade pip
 RUN pip install --no-cache-dir -r /my_pro/requirements.txt
 
-# Copy the entire project directory (including 'my_pro' folder) into the container
+# Copy the rest of the application code
 COPY . /my_pro/
 
-# Write the Apache configuration inline
-RUN echo '<VirtualHost *:80>' > /etc/apache2/sites-available/000-default.conf && \
-    echo '    ServerName localhost' >> /etc/apache2/sites-available/000-default.conf && \
-    echo '    ProxyPass / http://127.0.0.1:8000/' >> /etc/apache2/sites-available/000-default.conf && \
-    echo '    ProxyPassReverse / http://127.0.0.1:8000/' >> /etc/apache2/sites-available/000-default.conf && \
-    echo '</VirtualHost>' >> /etc/apache2/sites-available/000-default.conf
+# Expose port 8000 to access the app
+EXPOSE 8000
 
-# Expose port 80 for HTTP
-EXPOSE 80
-
-# Start Apache HTTPD and Gunicorn
-CMD apache2ctl -D FOREGROUND && gunicorn --bind 0.0.0.0:8000 my_pro.wsgi:application
-
+# Start the Django development server
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
 

@@ -3,7 +3,13 @@ FROM python:3.10-slim
 # Set the working directory
 WORKDIR /my_pro
 
-# Copy the requirements file and install dependencies
+# Install dependencies for psycopg2 (PostgreSQL development libraries)
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    libpq-dev && \
+    pip install --upgrade pip
+
+# Copy requirements file and install dependencies
 COPY my_pro/requirements.txt /my_pro/
 RUN pip install --no-cache-dir -r /my_pro/requirements.txt
 
